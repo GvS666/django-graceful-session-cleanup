@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = "Can be run as a cronjob or directly to clean out old data from the database (only expired sessions at the moment). Does this in a live db friendly way by never hogging the connection too long."
-    option_list = BaseCommand.option_list + (
+    option_list = getattr(BaseCommand, 'option_list', ()) + (
         make_option('-s', '--sleep-seconds',
             dest='sleep_seconds',
             default=5,
