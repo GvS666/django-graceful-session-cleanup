@@ -36,14 +36,14 @@ class Command(BaseCommand):
 
         self.stdout.write("started at %s...\n" % (start_at, ))
 
-        cursor = connection.cursor()
         i = 0
         while iteration_count>i:
             i += 1
             iteration_start_at = datetime.datetime.now()
             self.stdout.write("    started iteration %s of %s...\n" % (i, iteration_count))
-            actual_delete_count = cursor.execute("DELETE FROM django_session WHERE expire_date<now() LIMIT %s;", [delete_count])
-            transaction.commit_unless_managed()
+            with transaction.atomic():
+                cursor = connection.cursor()
+                actual_delete_count = cursor.execute("DELETE FROM django_session WHERE expire_date<now() LIMIT %s;", [delete_count])
             iteration_duration = datetime.datetime.now() - iteration_start_at
             blocked_time += iteration_duration
             iteration_duration_in_seconds = iteration_duration.seconds + iteration_duration.microseconds / 1E6
