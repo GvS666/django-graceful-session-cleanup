@@ -4,22 +4,28 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = "Can be run as a cronjob or directly to clean out old data from the database (only expired sessions at the moment). Does this in a live db friendly way by never hogging the connection too long."
-    option_list = getattr(BaseCommand, 'option_list', ()) + (
-        make_option('-s', '--sleep-seconds',
+
+    def add_arguments(self, parser):
+        # Named (optional) arguments
+        parser.add_argument(
+            '-s', '--sleep-seconds',
             dest='sleep_seconds',
             default=5,
             help='How long to sleep between each delete operation.'
-        ),
-        make_option('-c', '--delete-count',
+        )
+        # Named (optional) arguments
+        parser.add_argument(
+            '-c', '--delete-count',
             dest='delete_count',
             default=500,
             help='How many expired sessions to delete per iteration.'
         ),
-        make_option('-i', '--iteration-count',
+        # Named (optional) arguments
+        parser.add_argument(
+            '-i', '--iteration-count',
             dest='iteration_count',
             default=25,
             help='How many iterations to run.'
-        ),
         )
 
     def handle(self, *args, **options):
